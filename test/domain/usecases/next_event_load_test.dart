@@ -27,12 +27,22 @@ class LoadNextEventMockRepository implements LoadNextEventRepository {
 }
 
 void main() {
-  final Faker faker = Faker();
+  late Faker faker;
+  late String groupId;
+  late LoadNextEventMockRepository repo;
+  late NextEventLoader sut;
+
+  setUpAll(() {
+    faker = Faker();
+  });
+
+  setUp(() {
+    groupId = faker.randomGenerator.integer(5000).toString();
+    repo = LoadNextEventMockRepository();
+    sut = NextEventLoader(repo: repo);
+  });
 
   test('should load event data from a repository', () async {
-    final groupId = faker.randomGenerator.integer(5000).toString();
-    final repo = LoadNextEventMockRepository();
-    final sut = NextEventLoader(repo: repo);
     await sut(groupId: groupId);
     expect(repo.groupId, groupId);
     expect(repo.callsCount, 1);
