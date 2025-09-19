@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:faker/faker.dart';
 
@@ -13,10 +11,15 @@ class NextEventLoader {
   }
 }
 
-class LoadNextEventRepository {
+abstract class LoadNextEventRepository {
+  Future<void> loadNextEvent({required String groupId});
+}
+
+class LoadNextEventMockRepository implements LoadNextEventRepository {
   String? groupId;
   int callsCount = 0;
 
+  @override
   Future<void> loadNextEvent({required String groupId}) async {
     this.groupId = groupId;
     callsCount++;
@@ -28,7 +31,7 @@ void main() {
 
   test('should load event data from a repository', () async {
     final groupId = faker.randomGenerator.integer(5000).toString();
-    final repo = LoadNextEventRepository();
+    final repo = LoadNextEventMockRepository();
     final sut = NextEventLoader(repo: repo);
     await sut(groupId: groupId);
     expect(repo.groupId, groupId);
