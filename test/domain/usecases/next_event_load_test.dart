@@ -1,19 +1,10 @@
 import 'package:advanced_flutter/domain/repositories/load_next_event_repository.dart';
+import 'package:advanced_flutter/domain/usecases/next_event_loader.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:advanced_flutter/domain/entities/next_event.dart';
 import 'package:advanced_flutter/domain/entities/next_event_player.dart';
-
-class NextEventLoader {
-  final LoadNextEventRepository repo;
-
-  NextEventLoader({required this.repo});
-
-  Future<NextEvent> call({required String groupId}) async {
-    return repo.loadNextEvent(groupId: groupId);
-  }
-}
 
 class LoadNextEventSpyRepository implements LoadNextEventRepository {
   String? groupId;
