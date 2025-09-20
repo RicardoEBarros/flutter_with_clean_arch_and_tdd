@@ -6,6 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:advanced_flutter/domain/entities/next_event.dart';
 import 'package:advanced_flutter/domain/entities/next_event_player.dart';
 
+import '../../helpers/fakes.dart';
+
 class LoadNextEventSpyRepository implements LoadNextEventRepository {
   String? groupId;
   int callsCount = 0;
@@ -32,7 +34,7 @@ void main() {
   });
 
   setUp(() {
-    groupId = faker.randomGenerator.integer(5000).toString();
+    groupId = anyString();
     repo = LoadNextEventSpyRepository();
     repo.output = NextEvent(
       groupName: 'any_group_name',
