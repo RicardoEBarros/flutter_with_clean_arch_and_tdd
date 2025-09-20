@@ -25,4 +25,6 @@ class NextEventPlayer {
         names.last.split('').elementAtOrNull(names.length == 1 ? 1 : 0) ?? '';
     return '$firstChar$lastChar';
   }
+
+  void operator [](String other) {}
 }

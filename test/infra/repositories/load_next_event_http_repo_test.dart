@@ -1,7 +1,11 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart';
 import 'dart:typed_data';
 import 'dart:convert';
+
+import 'package:advanced_flutter/domain/entities/next_event_player.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart';
+
+import 'package:advanced_flutter/domain/entities/next_event.dart';
 
 import '../../helpers/fakes.dart';
 
@@ -11,13 +15,32 @@ class LoadNextEventHttpRepository {
 
   LoadNextEventHttpRepository({required this.httpClient, required this.url});
 
-  Future<void> loadNextEvent({required String groupId}) async {
+  Future<NextEvent> loadNextEvent({required String groupId}) async {
     final uri = Uri.parse(url.replaceFirst(':groupId', groupId));
     final Map<String, String> headers = const {
       'content-type': 'application/json',
       'accept': 'application/json',
     };
-    await httpClient.get(uri, headers: headers);
+    final response = await httpClient.get(uri, headers: headers);
+    final event = jsonDecode(response.body);
+    return NextEvent(
+      groupName: event['groupName'],
+      date: DateTime.parse(event['date']),
+      players: event['players']
+          .map<NextEventPlayer>(
+            (player) => NextEventPlayer(
+              id: player['id'],
+              name: player['name'],
+              position: player['position'],
+              photo: player['photo'],
+              confirmationDate: DateTime.tryParse(
+                player['confirmationDate'] ?? '',
+              ),
+              isConfirmed: player['isConfirmed'],
+            ),
+          )
+          .toList(),
+    );
   }
 }
 
@@ -26,6 +49,8 @@ class HttpClientSpy implements Client {
   String? url;
   int callsCount = 0;
   Map<String, String>? headers;
+  String responseJson = '';
+  int statusCode = 200;
 
   @override
   void close() {}
@@ -46,7 +71,7 @@ class HttpClientSpy implements Client {
     callsCount++;
     this.url = url.toString();
     this.headers = headers;
-    return Response('', 200);
+    return Response(responseJson, statusCode);
   }
 
   @override
@@ -113,6 +138,24 @@ void main() {
   setUp(() {
     groupId = anyString();
     httpClient = HttpClientSpy();
+    httpClient.responseJson = '''
+      {
+        "groupName": "any_group_name",
+        "date": "2024-08-30T10:30",
+        "players": [{
+          "id": "any_id_1",
+          "name": "any_name_1",
+          "isConfirmed": true
+        }, {
+          "id": "any_id_2",
+          "name": "any_name_2",
+          "photo": "any_photo_2",
+          "position": "any_position_2",
+          "confirmationDate": "2024-08-29T11:00",
+          "isConfirmed": false
+        }]
+      }
+    ''';
     sut = LoadNextEventHttpRepository(httpClient: httpClient, url: url);
   });
 
@@ -131,5 +174,20 @@ void main() {
     await sut.loadNextEvent(groupId: groupId);
     expect(httpClient.headers?['content-type'], 'application/json');
     expect(httpClient.headers?['accept'], 'application/json');
+  });
+
+  test('should return NexEvent on 200', () async {
+    final event = await sut.loadNextEvent(groupId: groupId);
+    expect(event.groupName, 'any_group_name');
+    expect(event.date, DateTime(2024, 8, 30, 10, 30));
+    expect(event.players[0].id, 'any_id_1');
+    expect(event.players[0].name, 'any_name_1');
+    expect(event.players[0].isConfirmed, true);
+    expect(event.players[1].id, 'any_id_2');
+    expect(event.players[1].name, 'any_name_2');
+    expect(event.players[1].position, 'any_position_2');
+    expect(event.players[1].photo, 'any_photo_2');
+    expect(event.players[1].confirmationDate, DateTime(2024, 8, 29, 11, 00));
+    expect(event.players[1].isConfirmed, false);
   });
 }
