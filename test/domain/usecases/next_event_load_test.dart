@@ -28,7 +28,7 @@ abstract class LoadNextEventRepository {
   Future<NextEvent> loadNextEvent({required String groupId});
 }
 
-class LoadNextEventMockRepository implements LoadNextEventRepository {
+class LoadNextEventSpyRepository implements LoadNextEventRepository {
   String? groupId;
   int callsCount = 0;
   NextEvent? output;
@@ -44,7 +44,7 @@ class LoadNextEventMockRepository implements LoadNextEventRepository {
 void main() {
   late Faker faker;
   late String groupId;
-  late LoadNextEventMockRepository repo;
+  late LoadNextEventSpyRepository repo;
   late NextEventLoader sut;
 
   setUpAll(() {
@@ -53,7 +53,7 @@ void main() {
 
   setUp(() {
     groupId = faker.randomGenerator.integer(5000).toString();
-    repo = LoadNextEventMockRepository();
+    repo = LoadNextEventSpyRepository();
     repo.output = NextEvent(
       groupName: 'any_group_name',
       date: DateTime.now(),
