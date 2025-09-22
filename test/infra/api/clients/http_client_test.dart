@@ -29,6 +29,8 @@ class HttpClient implements HttpGetClient {
           final data = jsonDecode(response.body);
           return (T == JsonArr) ? data.map<Json>((e) => e as Json).toList() : data;
         }
+      case 204:
+        return null;
       case 401:
         throw DomainError.sessionExpired;
       default:
@@ -195,6 +197,12 @@ void main() {
 
     test('should return null on 200 with empty response', () async {
       client.responseJson = '';
+      final data = await sut.get(url: url);
+      expect(data, isNull);
+    });
+
+    test('should return null on 204', () async {
+      client.statusCode = 204;
       final data = await sut.get(url: url);
       expect(data, isNull);
     });
