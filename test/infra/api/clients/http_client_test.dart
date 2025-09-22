@@ -117,5 +117,11 @@ void main() {
       final future = sut.get(url: url);
       expect(future, throwsA(DomainError.sessionExpired));
     });
+
+    test('should throw UnexpectedError on 403', () async {
+      client.statusCode = 403;
+      final future = sut.get(url: url);
+      expect(future, throwsA(DomainError.unexpected));
+    });
   });
 }
