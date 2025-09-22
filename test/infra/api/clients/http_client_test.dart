@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dartx/dartx.dart';
 import 'package:faker/faker.dart';
 import 'package:http/http.dart';
@@ -13,13 +15,13 @@ class HttpClient {
 
   HttpClient({required this.client});
 
-  Future<void> get({required String url, Map<String, String>? headers, Map<String, String?>? params, Map<String, String>? queryString}) async {
+  Future<T> get<T>({required String url, Map<String, String>? headers, Map<String, String?>? params, Map<String, String>? queryString}) async {
     final allHeaders = (headers ?? {})..addAll({'content-type': 'application/json', 'accept': 'application/json'});
     final uri = _buildUri(url: url, params: params, queryString: queryString);
     final response = await client.get(uri, headers: allHeaders);
     switch (response.statusCode) {
       case 200:
-        break;
+        return jsonDecode(response.body);
       case 401:
         throw DomainError.sessionExpired;
       default:
@@ -47,6 +49,12 @@ void main() {
 
   setUp(() {
     client = ClientSpy();
+    client.responseJson = '''
+        {
+          "key1": "value1",
+          "key2": "value2"
+        }
+      ''';
     url = faker.internet.httpUrl();
     sut = HttpClient(client: client);
   });
@@ -134,6 +142,12 @@ void main() {
       client.statusCode = 500;
       final future = sut.get(url: url);
       expect(future, throwsA(DomainError.unexpected));
+    });
+
+    test('should return a Map', () async {
+      final dynamic data = await sut.get(url: url);
+      expect(data['key1'], 'value1');
+      expect(data['key2'], 'value2');
     });
   });
 }
