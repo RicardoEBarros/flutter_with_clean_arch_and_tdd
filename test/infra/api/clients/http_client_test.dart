@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:advanced_flutter/infra/api/clients/http_get_client.dart';
 import 'package:advanced_flutter/infra/types/json.dart';
 import 'package:dartx/dartx.dart';
 import 'package:faker/faker.dart';
@@ -11,18 +12,20 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'client_spy.dart';
 
-class HttpClient {
+class HttpClient implements HttpGetClient {
   final Client client;
 
   HttpClient({required this.client});
 
-  Future<T> get<T>({required String url, Map<String, String>? headers, Map<String, String?>? params, Map<String, String>? queryString}) async {
+  @override
+  Future<T?> get<T>({required String url, Map<String, String>? headers, Map<String, String?>? params, Map<String, String>? queryString}) async {
     final allHeaders = (headers ?? {})..addAll({'content-type': 'application/json', 'accept': 'application/json'});
     final uri = _buildUri(url: url, params: params, queryString: queryString);
     final response = await client.get(uri, headers: allHeaders);
     switch (response.statusCode) {
       case 200:
         {
+          if (response.body.isEmpty) return null;
           final data = jsonDecode(response.body);
           return (T == JsonArr) ? data.map<Json>((e) => e as Json).toList() : data;
         }
@@ -149,9 +152,9 @@ void main() {
     });
 
     test('should return a Map', () async {
-      final dynamic data = await sut.get<Json>(url: url);
-      expect(data['key1'], 'value1');
-      expect(data['key2'], 'value2');
+      final data = await sut.get<Json>(url: url);
+      expect(data?['key1'], 'value1');
+      expect(data?['key2'], 'value2');
     });
 
     test('should return a List', () async {
@@ -165,9 +168,9 @@ void main() {
           }
         ]
       ''';
-      final dynamic data = await sut.get<JsonArr>(url: url);
-      expect(data[0]['key'], 'value1');
-      expect(data[1]['key'], 'value2');
+      final data = await sut.get<JsonArr>(url: url);
+      expect(data?[0]['key'], 'value1');
+      expect(data?[1]['key'], 'value2');
     });
 
     test('should return a Map with List', () async {
@@ -185,9 +188,15 @@ void main() {
         }
       ''';
       final data = await sut.get<Json>(url: url);
-      expect(data['key1'], 'value1');
-      expect(data['key2'][0]["key"], 'value1');
-      expect(data['key2'][1]["key"], 'value2');
+      expect(data?['key1'], 'value1');
+      expect(data?['key2'][0]["key"], 'value1');
+      expect(data?['key2'][1]["key"], 'value2');
+    });
+
+    test('should return null on 200 with empty response', () async {
+      client.responseJson = '';
+      final data = await sut.get(url: url);
+      expect(data, isNull);
     });
   });
 }
