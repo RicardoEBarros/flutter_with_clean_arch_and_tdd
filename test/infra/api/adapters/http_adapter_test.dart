@@ -47,17 +47,18 @@ void main() {
     });
 
     test('should append headers', () async {
-      await sut.get(url: url, headers: {'h1': 'value1', 'h2': 'value2'});
+      await sut.get(url: url, headers: {'h1': 'value1', 'h2': 'value2', 'h3': 123});
       expect(client.headers?['content-type'], 'application/json');
       expect(client.headers?['accept'], 'application/json');
       expect(client.headers?['h1'], 'value1');
       expect(client.headers?['h2'], 'value2');
+      expect(client.headers?['h3'], '123');
     });
 
-    test('should request with correct url', () async {
-      url = 'http://anyurl.com/:p1/:p2';
-      await sut.get(url: url, params: {'p1': 'v1', 'p2': 'v2'});
-      expect(client.url, 'http://anyurl.com/v1/v2');
+    test('should request with correct param', () async {
+      url = 'http://anyurl.com/:p1/:p2/:p3';
+      await sut.get(url: url, params: {'p1': 'v1', 'p2': 'v2', 'p3': 123});
+      expect(client.url, 'http://anyurl.com/v1/v2/123');
     });
 
     test('should request with optional param', () async {
