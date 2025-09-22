@@ -33,7 +33,7 @@ void main() {
     sut = LoadNextEventApiRepository(httpClient: httpClient, url: url);
   });
 
-  test('should call HttpClient with correct input', () async {
+  test('should call HttpAdapter with correct input', () async {
     await sut.loadNextEvent(groupId: groupId);
     expect(httpClient.url, url);
     expect(httpClient.params, {"groupId": groupId});
