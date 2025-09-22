@@ -5,13 +5,13 @@ final class HttpGetClientSpy implements HttpGetClient {
   String? url;
   int callsCount = 0;
   Json? params;
-  Map<String, String>? headers;
-  Map<String, String>? queryString;
+  Json? headers;
+  Json? queryString;
   dynamic response;
   Error? error;
 
   @override
-  Future<T?> get<T>({required String url, Map<String, String>? headers, Map<String, String?>? params, Map<String, String>? queryString}) async {
+  Future<T?> get<T>({required String url, Json? headers, Json? params, Json? queryString}) async {
     this.url = url;
     this.params = params;
     this.headers = headers;
