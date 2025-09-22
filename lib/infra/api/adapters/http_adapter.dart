@@ -13,7 +13,7 @@ final class HttpAdapter implements HttpGetClient {
   const HttpAdapter({required this.client});
 
   @override
-  Future<T?> get<T>({required String url, Map<String, String>? headers, Map<String, String?>? params, Map<String, String>? queryString}) async {
+  Future<T?> get<T>({required String url, Json? headers, Map<String, String?>? params, Map<String, String>? queryString}) async {
     final allHeaders = _buildHeaders(url: url, headers: headers);
     final uri = _buildUri(url: url, params: params, queryString: queryString);
     final response = await client.get(uri, headers: allHeaders);
@@ -37,8 +37,9 @@ final class HttpAdapter implements HttpGetClient {
     }
   }
 
-  Map<String, String> _buildHeaders({required String url, Map<String, String>? headers}) {
-    return (headers ?? {})..addAll({'content-type': 'application/json', 'accept': 'application/json'});
+  Map<String, String> _buildHeaders({required String url, Json? headers}) {
+    final defaultHeaders = {'content-type': 'application/json', 'accept': 'application/json'};
+    return defaultHeaders..addAll({for (final key in (headers ?? {}).keys) key: headers![key].toString()});
   }
 
   Uri _buildUri({required String url, Map<String, String?>? params, Map<String, String>? queryString}) {
