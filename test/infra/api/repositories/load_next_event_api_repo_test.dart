@@ -1,3 +1,4 @@
+import 'package:advanced_flutter/domain/entities/domain_error.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:advanced_flutter/infra/api/repositories/load_next_event_api_repo.dart';
@@ -26,14 +27,7 @@ void main() {
       "date": "2024-08-30T10:30",
       "players": [
         {"id": "any_id_1", "name": "any_name_1", "isConfirmed": true},
-        {
-          "id": "any_id_2",
-          "name": "any_name_2",
-          "photo": "any_photo_2",
-          "position": "any_position_2",
-          "confirmationDate": "2024-08-29T11:00",
-          "isConfirmed": false,
-        },
+        {"id": "any_id_2", "name": "any_name_2", "photo": "any_photo_2", "position": "any_position_2", "confirmationDate": "2024-08-29T11:00", "isConfirmed": false},
       ],
     };
     sut = LoadNextEventApiRepository(httpClient: httpClient, url: url);
@@ -66,5 +60,11 @@ void main() {
     httpClient.error = error;
     final future = sut.loadNextEvent(groupId: groupId);
     expect(future, throwsA(error));
+  });
+
+  test('should throw an Unexpected on null response', () async {
+    httpClient.response = null;
+    final future = sut.loadNextEvent(groupId: groupId);
+    expect(future, throwsA(DomainError.unexpected));
   });
 }

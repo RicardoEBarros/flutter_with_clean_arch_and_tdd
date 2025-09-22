@@ -9,7 +9,7 @@ class HttpGetClientSpy implements HttpGetClient {
   Error? error;
 
   @override
-  Future<T> get<T>({required String url, Map<String, String>? headers, Map<String, String?>? params, Map<String, String>? queryString}) async {
+  Future<T?> get<T>({required String url, Map<String, String>? headers, Map<String, String?>? params, Map<String, String>? queryString}) async {
     this.url = url;
     this.params = params;
     callsCount++;
