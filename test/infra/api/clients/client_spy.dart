@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:http/http.dart';
 
-class ClientSpy implements Client {
+final class ClientSpy implements Client {
   String? method;
   String? url;
   int callsCount = 0;
@@ -15,12 +15,7 @@ class ClientSpy implements Client {
   void close() {}
 
   @override
-  Future<Response> delete(
-    Uri url, {
-    Map<String, String>? headers,
-    Object? body,
-    Encoding? encoding,
-  }) {
+  Future<Response> delete(Uri url, {Map<String, String>? headers, Object? body, Encoding? encoding}) {
     throw UnimplementedError();
   }
 
@@ -39,32 +34,17 @@ class ClientSpy implements Client {
   }
 
   @override
-  Future<Response> patch(
-    Uri url, {
-    Map<String, String>? headers,
-    Object? body,
-    Encoding? encoding,
-  }) {
+  Future<Response> patch(Uri url, {Map<String, String>? headers, Object? body, Encoding? encoding}) {
     throw UnimplementedError();
   }
 
   @override
-  Future<Response> post(
-    Uri url, {
-    Map<String, String>? headers,
-    Object? body,
-    Encoding? encoding,
-  }) {
+  Future<Response> post(Uri url, {Map<String, String>? headers, Object? body, Encoding? encoding}) {
     throw UnimplementedError();
   }
 
   @override
-  Future<Response> put(
-    Uri url, {
-    Map<String, String>? headers,
-    Object? body,
-    Encoding? encoding,
-  }) {
+  Future<Response> put(Uri url, {Map<String, String>? headers, Object? body, Encoding? encoding}) {
     throw UnimplementedError();
   }
 

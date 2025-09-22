@@ -7,10 +7,10 @@ import 'package:advanced_flutter/domain/entities/domain_error.dart';
 import 'package:advanced_flutter/infra/api/clients/http_get_client.dart';
 import 'package:advanced_flutter/infra/types/json.dart';
 
-class HttpAdapter implements HttpGetClient {
+final class HttpAdapter implements HttpGetClient {
   final Client client;
 
-  HttpAdapter({required this.client});
+  const HttpAdapter({required this.client});
 
   @override
   Future<T?> get<T>({required String url, Map<String, String>? headers, Map<String, String?>? params, Map<String, String>? queryString}) async {
@@ -42,7 +42,7 @@ class HttpAdapter implements HttpGetClient {
   }
 
   Uri _buildUri({required String url, Map<String, String?>? params, Map<String, String>? queryString}) {
-    // fold => recurso interessante
+    // fold => usado para a criação de um reduce, que permite informar uma inicialização
     url = params?.keys.fold(url, (result, key) => result.replaceFirst(':$key', params[key] ?? '')).removeSuffix('/') ?? url;
     url = queryString?.keys.fold('$url?', (result, key) => '$result$key=${queryString[key]}&').removeSuffix('&') ?? url;
     return Uri.parse(url);
