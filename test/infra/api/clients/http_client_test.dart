@@ -129,5 +129,11 @@ void main() {
       final future = sut.get(url: url);
       expect(future, throwsA(DomainError.unexpected));
     });
+
+    test('should throw UnexpectedError on 500', () async {
+      client.statusCode = 500;
+      final future = sut.get(url: url);
+      expect(future, throwsA(DomainError.unexpected));
+    });
   });
 }
