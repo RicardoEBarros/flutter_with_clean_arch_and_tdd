@@ -2,6 +2,8 @@ import 'package:dartx/dartx.dart';
 import 'package:faker/faker.dart';
 import 'package:http/http.dart';
 
+import 'package:advanced_flutter/domain/entities/domain_error.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 
 import 'client_spy.dart';
@@ -14,10 +16,17 @@ class HttpClient {
   Future<void> get({required String url, Map<String, String>? headers, Map<String, String?>? params, Map<String, String>? queryString}) async {
     final allHeaders = (headers ?? {})..addAll({'content-type': 'application/json', 'accept': 'application/json'});
     final uri = _buildUri(url: url, params: params, queryString: queryString);
-    await client.get(uri, headers: allHeaders);
+    final response = await client.get(uri, headers: allHeaders);
+    switch (response.statusCode) {
+      case 200:
+        break;
+      default:
+        throw DomainError.unexpected;
+    }
   }
 
   Uri _buildUri({required String url, Map<String, String?>? params, Map<String, String>? queryString}) {
+    // fold => recurso interessante
     url = params?.keys.fold(url, (result, key) => result.replaceFirst(':$key', params[key] ?? '')).removeSuffix('/') ?? url;
     url = queryString?.keys.fold('$url?', (result, key) => '$result$key=${queryString[key]}&').removeSuffix('&') ?? url;
     return Uri.parse(url);
@@ -93,6 +102,12 @@ void main() {
       url = 'http://anyurl.com/:p3/:p4';
       await sut.get(url: url, queryString: {'q1': 'v1', 'q2': 'v2'}, params: {'p3': 'v3', 'p4': 'v4'});
       expect(client.url, 'http://anyurl.com/v3/v4?q1=v1&q2=v2');
+    });
+
+    test('should throw UnexpectedError on 400', () async {
+      client.statusCode = 400;
+      final future = sut.get(url: url);
+      expect(future, throwsA(DomainError.unexpected));
     });
   });
 }
