@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:advanced_flutter/infra/types/json.dart';
 import 'package:dartx/dartx.dart';
 import 'package:faker/faker.dart';
 import 'package:http/http.dart';
@@ -21,7 +22,10 @@ class HttpClient {
     final response = await client.get(uri, headers: allHeaders);
     switch (response.statusCode) {
       case 200:
-        return jsonDecode(response.body);
+        {
+          final data = jsonDecode(response.body);
+          return (T == JsonArr) ? data.map<Json>((e) => e as Json).toList() : data;
+        }
       case 401:
         throw DomainError.sessionExpired;
       default:
@@ -145,9 +149,25 @@ void main() {
     });
 
     test('should return a Map', () async {
-      final dynamic data = await sut.get(url: url);
+      final dynamic data = await sut.get<Json>(url: url);
       expect(data['key1'], 'value1');
       expect(data['key2'], 'value2');
+    });
+
+    test('should return a List', () async {
+      client.responseJson = '''
+        [
+          {
+            "key": "value1"
+          },
+          {
+            "key": "value2"
+          }
+        ]
+      ''';
+      final dynamic data = await sut.get<JsonArr>(url: url);
+      expect(data[0]['key'], 'value1');
+      expect(data[1]['key'], 'value2');
     });
   });
 }
