@@ -13,7 +13,7 @@ final class HttpAdapter implements HttpGetClient {
   const HttpAdapter({required this.client});
 
   @override
-  Future<T?> get<T>({required String url, Json? headers, Json? params, Map<String, String>? queryString}) async {
+  Future<T?> get<T>({required String url, Json? headers, Json? params, Json? queryString}) async {
     final allHeaders = _buildHeaders(url: url, headers: headers);
     final uri = _buildUri(url: url, params: params, queryString: queryString);
     final response = await client.get(uri, headers: allHeaders);
@@ -42,7 +42,7 @@ final class HttpAdapter implements HttpGetClient {
     return defaultHeaders..addAll({for (final key in (headers ?? {}).keys) key: headers![key].toString()});
   }
 
-  Uri _buildUri({required String url, Json? params, Map<String, String>? queryString}) {
+  Uri _buildUri({required String url, Json? params, Json? queryString}) {
     // fold => usado para a criação de um reduce, que permite informar uma inicialização
     url = params?.keys.fold(url, (result, key) => result.replaceFirst(':$key', params[key]?.toString() ?? '')).removeSuffix('/') ?? url;
     url = queryString?.keys.fold('$url?', (result, key) => '$result$key=${queryString[key]}&').removeSuffix('&') ?? url;
