@@ -9,12 +9,18 @@ final class NextEventViewModel {
   final List<NextEventPlayerViewModel> out;
   final List<NextEventPlayerViewModel> doubt;
 
-  const NextEventViewModel({this.goalkeepers = const [], this.players = const [], this.out = const [], this.doubt = const []});
+  const NextEventViewModel({
+    this.goalkeepers = const [],
+    this.players = const [],
+    this.out = const [],
+    this.doubt = const [],
+  });
 }
 
 final class NextEventPlayerViewModel {
   final String name;
   final String? position;
+  final bool? isConfirmed;
 
-  const NextEventPlayerViewModel({required this.name, this.position});
+  const NextEventPlayerViewModel({required this.name, this.position, this.isConfirmed});
 }

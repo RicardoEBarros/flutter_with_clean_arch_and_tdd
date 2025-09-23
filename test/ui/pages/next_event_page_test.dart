@@ -1,4 +1,5 @@
 import 'package:advanced_flutter/ui/components/player_position.dart';
+import 'package:advanced_flutter/ui/components/player_status.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:flutter/material.dart';
 
@@ -26,7 +27,9 @@ final class NextEventPresenterSpy implements NextEventPresenter {
     List<NextEventPlayerViewModel> out = const [],
     List<NextEventPlayerViewModel> doubt = const [],
   }) {
-    nextEventSubject.add(NextEventViewModel(goalkeepers: goalkeepers, players: players, out: out, doubt: doubt));
+    nextEventSubject.add(
+      NextEventViewModel(goalkeepers: goalkeepers, players: players, out: out, doubt: doubt),
+    );
   }
 
   void emitError() {
@@ -96,6 +99,7 @@ void main() {
     expect(find.text('Rafael'), findsOneWidget);
     expect(find.text('Pedro'), findsOneWidget);
     expect(find.byType(PlayerPosition), findsExactly(3));
+    expect(find.byType(PlayerStatus), findsExactly(3));
   });
 
   testWidgets('should present players section', (tester) async {
@@ -114,6 +118,7 @@ void main() {
     expect(find.text('Rafael'), findsOneWidget);
     expect(find.text('Pedro'), findsOneWidget);
     expect(find.byType(PlayerPosition), findsExactly(3));
+    expect(find.byType(PlayerStatus), findsExactly(3));
   });
 
   testWidgets('should out out section', (tester) async {
@@ -132,6 +137,7 @@ void main() {
     expect(find.text('Rafael'), findsOneWidget);
     expect(find.text('Pedro'), findsOneWidget);
     expect(find.byType(PlayerPosition), findsExactly(3));
+    expect(find.byType(PlayerStatus), findsExactly(3));
   });
 
   testWidgets('should out doubt section', (tester) async {
@@ -150,6 +156,7 @@ void main() {
     expect(find.text('Rafael'), findsOneWidget);
     expect(find.text('Pedro'), findsOneWidget);
     expect(find.byType(PlayerPosition), findsExactly(3));
+    expect(find.byType(PlayerStatus), findsExactly(3));
   });
 
   testWidgets('should hide goalkeepers section', (tester) async {
@@ -161,5 +168,6 @@ void main() {
     expect(find.text('FORA'), findsNothing);
     expect(find.text('DÚVIDA'), findsNothing);
     expect(find.byType(PlayerPosition), findsNothing);
+    expect(find.byType(PlayerStatus), findsNothing);
   });
 }

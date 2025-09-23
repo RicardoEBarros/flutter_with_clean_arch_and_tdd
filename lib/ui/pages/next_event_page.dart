@@ -1,4 +1,5 @@
 import 'package:advanced_flutter/ui/components/player_position.dart';
+import 'package:advanced_flutter/ui/components/player_status.dart';
 import 'package:flutter/material.dart';
 
 import 'package:advanced_flutter/presentation/presenters/next_event_presenter.dart';
@@ -25,13 +26,16 @@ class _NextEventPageState extends State<NextEventPage> {
       body: StreamBuilder<NextEventViewModel>(
         stream: widget.presenter.nextEventStream,
         builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.active) return const CircularProgressIndicator();
+          if (snapshot.connectionState != ConnectionState.active)
+            return const CircularProgressIndicator();
           if (snapshot.hasError) return const SizedBox();
           final viewModel = snapshot.data!;
           return ListView(
             children: [
-              if (viewModel.goalkeepers.isNotEmpty) ListSection(title: 'DENTRO - GOLEIROS', items: viewModel.goalkeepers),
-              if (viewModel.players.isNotEmpty) ListSection(title: 'DENTRO - JOGADORES', items: viewModel.players),
+              if (viewModel.goalkeepers.isNotEmpty)
+                ListSection(title: 'DENTRO - GOLEIROS', items: viewModel.goalkeepers),
+              if (viewModel.players.isNotEmpty)
+                ListSection(title: 'DENTRO - JOGADORES', items: viewModel.players),
               if (viewModel.out.isNotEmpty) ListSection(title: 'FORA', items: viewModel.out),
               if (viewModel.doubt.isNotEmpty) ListSection(title: 'DÚVIDA', items: viewModel.doubt),
             ],
@@ -59,6 +63,7 @@ final class ListSection extends StatelessWidget {
             children: [
               Text(player.name),
               PlayerPosition(position: player.position),
+              PlayerStatus(isConfirmed: player.isConfirmed),
             ],
           ),
         ),
