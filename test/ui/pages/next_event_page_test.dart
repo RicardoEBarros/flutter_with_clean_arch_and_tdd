@@ -21,7 +21,7 @@ class _NextEventPageState extends State<NextEventPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold();
+    return const Scaffold(body: CircularProgressIndicator());
   }
 }
 
@@ -57,5 +57,10 @@ void main() {
     await tester.pumpWidget(sut);
     expect(presenter.loadCallsCount, 1);
     expect(presenter.groupId, groupId);
+  });
+
+  testWidgets('should present spinner while data is loading', (tester) async {
+    await tester.pumpWidget(sut);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 }
