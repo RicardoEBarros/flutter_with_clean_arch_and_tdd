@@ -6,6 +6,7 @@ final class NextEventLoader {
 
   const NextEventLoader({required this.repo});
 
+  // call => método que não precisa ser "invocado"
   Future<NextEvent> call({required String groupId}) async {
     return repo.loadNextEvent(groupId: groupId);
   }
