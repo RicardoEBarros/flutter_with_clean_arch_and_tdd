@@ -8,8 +8,9 @@ final class NextEventViewModel {
   final List<NextEventPlayerViewModel> goalkeepers;
   final List<NextEventPlayerViewModel> players;
   final List<NextEventPlayerViewModel> out;
+  final List<NextEventPlayerViewModel> doubt;
 
-  const NextEventViewModel({this.goalkeepers = const [], this.players = const [], this.out = const []});
+  const NextEventViewModel({this.goalkeepers = const [], this.players = const [], this.out = const [], this.doubt = const []});
 }
 
 final class NextEventPlayerViewModel {
@@ -48,6 +49,7 @@ class _NextEventPageState extends State<NextEventPage> {
               if (viewModel.goalkeepers.isNotEmpty) ListSection(title: 'DENTRO - GOLEIROS', items: viewModel.goalkeepers),
               if (viewModel.players.isNotEmpty) ListSection(title: 'DENTRO - JOGADORES', items: viewModel.players),
               if (viewModel.out.isNotEmpty) ListSection(title: 'FORA', items: viewModel.out),
+              if (viewModel.doubt.isNotEmpty) ListSection(title: 'DÚVIDA', items: viewModel.doubt),
             ],
           );
         },
@@ -89,8 +91,9 @@ final class NextEventPresenterSpy implements NextEventPresenter {
     List<NextEventPlayerViewModel> goalkeepers = const [],
     List<NextEventPlayerViewModel> players = const [],
     List<NextEventPlayerViewModel> out = const [],
+    List<NextEventPlayerViewModel> doubt = const [],
   }) {
-    nextEventSubject.add(NextEventViewModel(goalkeepers: goalkeepers, players: players, out: out));
+    nextEventSubject.add(NextEventViewModel(goalkeepers: goalkeepers, players: players, out: out, doubt: doubt));
   }
 
   void emitError() {
@@ -189,6 +192,23 @@ void main() {
     );
     await tester.pump();
     expect(find.text('FORA'), findsOneWidget);
+    expect(find.text('3'), findsOneWidget);
+    expect(find.text('Ricardo'), findsOneWidget);
+    expect(find.text('Rafael'), findsOneWidget);
+    expect(find.text('Pedro'), findsOneWidget);
+  });
+
+  testWidgets('should out doubt section', (tester) async {
+    await tester.pumpWidget(sut);
+    presenter.emitNextEventWith(
+      doubt: const [
+        NextEventPlayerViewModel(name: 'Ricardo'),
+        NextEventPlayerViewModel(name: 'Rafael'),
+        NextEventPlayerViewModel(name: 'Pedro'),
+      ],
+    );
+    await tester.pump();
+    expect(find.text('DÚVIDA'), findsOneWidget);
     expect(find.text('3'), findsOneWidget);
     expect(find.text('Ricardo'), findsOneWidget);
     expect(find.text('Rafael'), findsOneWidget);
