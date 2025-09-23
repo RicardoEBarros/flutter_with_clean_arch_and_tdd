@@ -10,16 +10,25 @@ final class PlayerStatus extends StatelessWidget {
     return Container(
       width: 16,
       height: 16,
-      decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.teal),
+      decoration: BoxDecoration(shape: BoxShape.circle, color: getColor()),
     );
   }
+
+  Color getColor() => isConfirmed ? Colors.teal : Colors.pink;
 }
 
 void main() {
-  testWidgets('', (tester) async {
+  testWidgets('should present green status', (tester) async {
     const sut = MaterialApp(home: PlayerStatus(isConfirmed: true));
     await tester.pumpWidget(sut);
     final decoration = tester.firstWidget<Container>(find.byType(Container)).decoration as BoxDecoration;
     expect(decoration.color, Colors.teal);
+  });
+
+  testWidgets('should present pink status', (tester) async {
+    const sut = MaterialApp(home: PlayerStatus(isConfirmed: false));
+    await tester.pumpWidget(sut);
+    final decoration = tester.firstWidget<Container>(find.byType(Container)).decoration as BoxDecoration;
+    expect(decoration.color, Colors.pink);
   });
 }
