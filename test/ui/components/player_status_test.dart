@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 final class PlayerStatus extends StatelessWidget {
-  final bool isConfirmed;
-  const PlayerStatus({required this.isConfirmed, super.key});
+  final bool? isConfirmed;
+  const PlayerStatus({this.isConfirmed, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,11 @@ final class PlayerStatus extends StatelessWidget {
     );
   }
 
-  Color getColor() => isConfirmed ? Colors.teal : Colors.pink;
+  Color getColor() => switch (isConfirmed) {
+    true => Colors.teal,
+    false => Colors.pink,
+    null => Colors.blueGrey,
+  };
 }
 
 void main() {
@@ -30,5 +34,12 @@ void main() {
     await tester.pumpWidget(sut);
     final decoration = tester.firstWidget<Container>(find.byType(Container)).decoration as BoxDecoration;
     expect(decoration.color, Colors.pink);
+  });
+
+  testWidgets('should present pink status', (tester) async {
+    const sut = MaterialApp(home: PlayerStatus(isConfirmed: null));
+    await tester.pumpWidget(sut);
+    final decoration = tester.firstWidget<Container>(find.byType(Container)).decoration as BoxDecoration;
+    expect(decoration.color, Colors.blueGrey);
   });
 }
