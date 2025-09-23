@@ -1,3 +1,4 @@
+import 'package:advanced_flutter/ui/components/player_position.dart';
 import 'package:flutter/material.dart';
 
 import 'package:advanced_flutter/presentation/presenters/next_event_presenter.dart';
@@ -49,6 +50,19 @@ final class ListSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [Text(title), Text(items.length.toString()), ...items.map((player) => Text(player.name))]);
+    return Column(
+      children: [
+        Text(title),
+        Text(items.length.toString()),
+        ...items.map(
+          (player) => Row(
+            children: [
+              Text(player.name),
+              PlayerPosition(position: player.position),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }
