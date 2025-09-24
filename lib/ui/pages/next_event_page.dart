@@ -49,7 +49,8 @@ class _NextEventPageState extends State<NextEventPage> {
           if (snapshot.hasError) return buildErrorLayout();
           final viewModel = snapshot.data!;
           return RefreshIndicator(
-            onRefresh: () async => widget.presenter.reloadNextEvent(groupId: widget.groupId),
+            onRefresh: () async =>
+                widget.presenter.loadNextEvent(groupId: widget.groupId, isReload: true),
             child: ListView(
               children: [
                 if (viewModel.goalkeepers.isNotEmpty)
