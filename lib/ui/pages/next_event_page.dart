@@ -31,7 +31,7 @@ class _NextEventPageState extends State<NextEventPage> {
     children: [
       const Text('Algo errado aconteceu. Tente novamente!'),
       ElevatedButton(
-        onPressed: () => widget.presenter.reloadNextEvent(groupId: widget.groupId),
+        onPressed: () => widget.presenter.loadNextEvent(groupId: widget.groupId, isReload: true),
         child: const Text('Recarregar'),
       ),
     ],
