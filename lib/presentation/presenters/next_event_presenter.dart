@@ -1,5 +1,6 @@
 abstract class NextEventPresenter {
   Stream<NextEventViewModel> get nextEventStream;
+  Stream<bool> get isBusyStream;
 
   void reloadNextEvent({required String groupId});
   void loadNextEvent({required String groupId});
