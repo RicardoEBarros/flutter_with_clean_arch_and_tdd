@@ -1,6 +1,7 @@
 @Timeout(Duration(seconds: 1))
 library;
 
+import 'package:advanced_flutter/presentation/presenters/next_event_presenter.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -8,18 +9,19 @@ import '../../helpers/fakes.dart';
 
 final class NextEventRxPresenter {
   final Future<void> Function({required String groupId}) nextEventLoader;
-  final nextEventSubject = BehaviorSubject();
+  final nextEventSubject = BehaviorSubject<NextEventViewModel>();
   final isBusySubject = BehaviorSubject<bool>();
 
   NextEventRxPresenter({required this.nextEventLoader});
 
-  Stream get nextEventStream => nextEventSubject.stream;
   Stream<bool> get isBusyStream => isBusySubject.stream;
+  Stream<NextEventViewModel> get nextEventStream => nextEventSubject.stream;
 
   Future<void> loadNextEvent({required String groupId, bool isReload = false}) async {
     try {
       if (isReload) isBusySubject.add(true);
       await nextEventLoader(groupId: groupId);
+      nextEventSubject.add(const NextEventViewModel());
     } catch (error) {
       nextEventSubject.addError(error);
     } finally {
@@ -73,6 +75,7 @@ void main() {
 
   test('should emit correct events on reload with success', () async {
     expectLater(sut.isBusyStream, emitsInOrder([true, false]));
+    expectLater(sut.nextEventStream, emits(const TypeMatcher<NextEventViewModel>()));
     await sut.loadNextEvent(groupId: groupId, isReload: true);
   });
 
