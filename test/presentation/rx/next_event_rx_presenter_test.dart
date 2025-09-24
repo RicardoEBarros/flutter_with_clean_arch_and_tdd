@@ -70,4 +70,9 @@ void main() {
     sut.isBusyStream.listen(neverCalled);
     await sut.loadNextEvent(groupId: groupId);
   });
+
+  test('should emit correct events on reload with success', () async {
+    expectLater(sut.isBusyStream, emitsInOrder([true, false]));
+    await sut.loadNextEvent(groupId: groupId, isReload: true);
+  });
 }
