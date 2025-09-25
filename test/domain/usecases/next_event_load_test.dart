@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:advanced_flutter/domain/entities/next_event.dart';
 import 'package:advanced_flutter/domain/entities/next_event_player.dart';
 
-import '../../helpers/fakes.dart';
+import '../../mocks/fakes.dart';
 
 class LoadNextEventSpyRepository implements LoadNextEventRepository {
   String? groupId;
@@ -81,10 +81,7 @@ void main() {
       expect(event.players[i].name, repo.output?.players[i].name);
       expect(event.players[i].initials, isNotEmpty);
       expect(event.players[i].isConfirmed, repo.output?.players[i].isConfirmed);
-      expect(
-        event.players[i].confirmationDate,
-        repo.output?.players[i].confirmationDate,
-      );
+      expect(event.players[i].confirmationDate, repo.output?.players[i].confirmationDate);
     }
   });
 

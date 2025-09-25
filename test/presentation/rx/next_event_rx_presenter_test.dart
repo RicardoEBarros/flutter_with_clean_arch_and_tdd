@@ -1,32 +1,14 @@
 @Timeout(Duration(seconds: 1))
 library;
 
-import 'package:advanced_flutter/presentation/rx/next_event_rx_presenter.dart';
+import 'package:flutter_test/flutter_test.dart';
 
-import 'package:advanced_flutter/domain/entities/next_event.dart';
+import 'package:advanced_flutter/presentation/rx/next_event_rx_presenter.dart';
 import 'package:advanced_flutter/domain/entities/next_event_player.dart';
 import 'package:advanced_flutter/presentation/presenters/next_event_presenter.dart';
 
-import '../../helpers/fakes.dart';
-import 'package:flutter_test/flutter_test.dart';
-
-final class NextEventLoaderSpy {
-  int callsCount = 0;
-  String? groupId;
-  Error? error;
-  NextEvent output = NextEvent(groupName: anyString(), date: anyDate(), players: []);
-
-  Future<NextEvent> call({required String groupId}) async {
-    this.groupId = groupId;
-    callsCount++;
-    if (error != null) throw error!;
-    return output;
-  }
-
-  void simulatePlayers(List<NextEventPlayer> players) {
-    output = NextEvent(groupName: anyString(), date: anyDate(), players: players);
-  }
-}
+import '../../domain/mocks/next_event_loader_spy.dart';
+import '../../mocks/fakes.dart';
 
 void main() {
   late NextEventLoaderSpy nextEventLoader;

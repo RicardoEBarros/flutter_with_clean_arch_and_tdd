@@ -2,7 +2,7 @@ import 'package:advanced_flutter/infra/api/adapters/http_adapter.dart';
 import 'package:advanced_flutter/infra/types/json.dart';
 import 'package:advanced_flutter/domain/entities/errors.dart';
 
-import '../clients/client_spy.dart';
+import '../mocks/client_spy.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter_test/flutter_test.dart';
 

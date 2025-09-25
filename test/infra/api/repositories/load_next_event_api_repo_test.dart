@@ -4,8 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:advanced_flutter/infra/api/repositories/load_next_event_api_repo.dart';
 
 import 'package:faker/faker.dart';
-import '../../../helpers/fakes.dart';
-import '../clients/http_get_client_spy.dart';
+import '../../../mocks/fakes.dart';
+import '../mocks/http_get_client_spy.dart';
 
 void main() {
   late Faker fake;
@@ -27,7 +27,14 @@ void main() {
       "date": "2024-08-30T10:30",
       "players": [
         {"id": "any_id_1", "name": "any_name_1", "isConfirmed": true},
-        {"id": "any_id_2", "name": "any_name_2", "photo": "any_photo_2", "position": "any_position_2", "confirmationDate": "2024-08-29T11:00", "isConfirmed": false},
+        {
+          "id": "any_id_2",
+          "name": "any_name_2",
+          "photo": "any_photo_2",
+          "position": "any_position_2",
+          "confirmationDate": "2024-08-29T11:00",
+          "isConfirmed": false,
+        },
       ],
     };
     sut = LoadNextEventApiRepository(httpClient: httpClient, url: url);
