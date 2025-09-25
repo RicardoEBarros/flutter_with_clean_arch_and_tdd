@@ -1,14 +1,15 @@
 @Timeout(Duration(seconds: 1))
 library;
 
+import 'package:dartx/dartx.dart';
+
 import 'package:advanced_flutter/domain/entities/next_event.dart';
 import 'package:advanced_flutter/domain/entities/next_event_player.dart';
 import 'package:advanced_flutter/presentation/presenters/next_event_presenter.dart';
-import 'package:dartx/dartx.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:rxdart/rxdart.dart';
 
 import '../../helpers/fakes.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 final class NextEventRxPresenter implements NextEventPresenter {
   final Future<NextEvent> Function({required String groupId}) nextEventLoader;
@@ -36,27 +37,22 @@ final class NextEventRxPresenter implements NextEventPresenter {
     }
   }
 
+  Iterable<NextEventPlayer> _confirmed(List<NextEventPlayer> players) => players.where((player) => player.confirmationDate != null);
+  Iterable<NextEventPlayer> _doubt(List<NextEventPlayer> players) => players.where((player) => player.confirmationDate == null);
+  Iterable<NextEventPlayer> _in(List<NextEventPlayer> players) => _confirmed(players).where((player) => player.isConfirmed);
+  Iterable<NextEventPlayer> _out(List<NextEventPlayer> players) => _confirmed(players).where((player) => !player.isConfirmed);
+  Iterable<NextEventPlayer> _goalkeepers(List<NextEventPlayer> players) => _in(players).where((player) => player.position == 'goalkeeper');
+  Iterable<NextEventPlayer> _players(List<NextEventPlayer> players) => _in(players).where((player) => player.position != 'goalkeeper');
+  Comparable _sortedByName(NextEventPlayer player) => player.name;
+  Comparable _sortedByDate(NextEventPlayer player) => player.confirmationDate!;
+
+  List<NextEventPlayerViewModel> _mapPlayers(List<NextEventPlayer> players) => players.map(_mapPlayer).toList();
+
   NextEventViewModel _mapEvent(NextEvent event) => NextEventViewModel(
-    doubt: event.players
-        .where((player) => player.confirmationDate == null)
-        .sortedBy((player) => player.name)
-        .map(_mapPlayer)
-        .toList(),
-    out: event.players
-        .where((player) => player.confirmationDate != null && !player.isConfirmed)
-        .sortedBy((player) => player.confirmationDate!)
-        .map(_mapPlayer)
-        .toList(),
-    goalkeepers: event.players
-        .where((player) => player.confirmationDate != null && player.isConfirmed && player.position == 'goalkeeper')
-        .sortedBy((player) => player.confirmationDate!)
-        .map(_mapPlayer)
-        .toList(),
-    players: event.players
-        .where((player) => player.confirmationDate != null && player.isConfirmed && player.position != 'goalkeeper')
-        .sortedBy((player) => player.confirmationDate!)
-        .map(_mapPlayer)
-        .toList(),
+    doubt: _mapPlayers(_doubt(event.players).sortedBy(_sortedByName)),
+    out: _mapPlayers(_out(event.players).sortedBy(_sortedByDate)),
+    goalkeepers: _mapPlayers(_goalkeepers(event.players).sortedBy(_sortedByDate)),
+    players: _mapPlayers(_players(event.players).sortedBy(_sortedByDate)),
   );
 
   NextEventPlayerViewModel _mapPlayer(NextEventPlayer player) => NextEventPlayerViewModel(
@@ -146,13 +142,7 @@ void main() {
   });
 
   test('should map doubt player', () async {
-    final player = NextEventPlayer(
-      id: anyString(),
-      name: anyString(),
-      isConfirmed: anyBool(),
-      photo: anyString(),
-      position: anyString(),
-    );
+    final player = NextEventPlayer(id: anyString(), name: anyString(), isConfirmed: anyBool(), photo: anyString(), position: anyString());
     nextEventLoader.simulatePlayers([player]);
     sut.nextEventStream.listen((event) {
       expect(event.doubt.length, 1);
@@ -205,30 +195,12 @@ void main() {
 
   test('should build goalkeepers list sorted by confirmation date', () async {
     nextEventLoader.simulatePlayers([
-      NextEventPlayer(
-        id: anyString(),
-        name: 'C',
-        isConfirmed: true,
-        confirmationDate: DateTime(2024, 1, 1, 10),
-        position: 'goalkeeper',
-      ),
+      NextEventPlayer(id: anyString(), name: 'C', isConfirmed: true, confirmationDate: DateTime(2024, 1, 1, 10), position: 'goalkeeper'),
       NextEventPlayer(id: anyString(), name: 'A', isConfirmed: anyBool()),
-      NextEventPlayer(
-        id: anyString(),
-        name: 'B',
-        isConfirmed: true,
-        confirmationDate: DateTime(2024, 1, 1, 11),
-        position: 'defender',
-      ),
+      NextEventPlayer(id: anyString(), name: 'B', isConfirmed: true, confirmationDate: DateTime(2024, 1, 1, 11), position: 'defender'),
       NextEventPlayer(id: anyString(), name: 'E', isConfirmed: false, confirmationDate: DateTime(2024, 1, 1, 9)),
       NextEventPlayer(id: anyString(), name: 'D', isConfirmed: true, confirmationDate: DateTime(2024, 1, 1, 12)),
-      NextEventPlayer(
-        id: anyString(),
-        name: 'F',
-        isConfirmed: true,
-        confirmationDate: DateTime(2024, 1, 1, 8),
-        position: 'goalkeeper',
-      ),
+      NextEventPlayer(id: anyString(), name: 'F', isConfirmed: true, confirmationDate: DateTime(2024, 1, 1, 8), position: 'goalkeeper'),
     ]);
     sut.nextEventStream.listen((event) {
       expect(event.goalkeepers.length, 2);
@@ -261,30 +233,12 @@ void main() {
 
   test('should build player list sorted by confirmation date', () async {
     nextEventLoader.simulatePlayers([
-      NextEventPlayer(
-        id: anyString(),
-        name: 'C',
-        isConfirmed: true,
-        confirmationDate: DateTime(2024, 1, 1, 10),
-        position: 'goalkeeper',
-      ),
+      NextEventPlayer(id: anyString(), name: 'C', isConfirmed: true, confirmationDate: DateTime(2024, 1, 1, 10), position: 'goalkeeper'),
       NextEventPlayer(id: anyString(), name: 'A', isConfirmed: anyBool()),
-      NextEventPlayer(
-        id: anyString(),
-        name: 'B',
-        isConfirmed: true,
-        confirmationDate: DateTime(2024, 1, 1, 11),
-        position: 'defender',
-      ),
+      NextEventPlayer(id: anyString(), name: 'B', isConfirmed: true, confirmationDate: DateTime(2024, 1, 1, 11), position: 'defender'),
       NextEventPlayer(id: anyString(), name: 'E', isConfirmed: false, confirmationDate: DateTime(2024, 1, 1, 9)),
       NextEventPlayer(id: anyString(), name: 'D', isConfirmed: true, confirmationDate: DateTime(2024, 1, 1, 12)),
-      NextEventPlayer(
-        id: anyString(),
-        name: 'F',
-        isConfirmed: true,
-        confirmationDate: DateTime(2024, 1, 1, 8),
-        position: 'goalkeeper',
-      ),
+      NextEventPlayer(id: anyString(), name: 'F', isConfirmed: true, confirmationDate: DateTime(2024, 1, 1, 8), position: 'goalkeeper'),
     ]);
     sut.nextEventStream.listen((event) {
       expect(event.players.length, 2);
@@ -295,13 +249,7 @@ void main() {
   });
 
   test('should map player', () async {
-    final player = NextEventPlayer(
-      id: anyString(),
-      name: anyString(),
-      isConfirmed: true,
-      photo: anyString(),
-      confirmationDate: anyDate(),
-    );
+    final player = NextEventPlayer(id: anyString(), name: anyString(), isConfirmed: true, photo: anyString(), confirmationDate: anyDate());
     nextEventLoader.simulatePlayers([player]);
     sut.nextEventStream.listen((event) {
       expect(event.players.length, 1);
