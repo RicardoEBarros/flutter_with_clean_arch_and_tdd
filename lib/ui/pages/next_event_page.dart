@@ -1,6 +1,7 @@
 import 'package:advanced_flutter/ui/components/player_photo.dart';
 import 'package:advanced_flutter/ui/components/player_position.dart';
 import 'package:advanced_flutter/ui/components/player_status.dart';
+import 'package:awesome_flutter_extensions/awesome_flutter_extensions.dart';
 import 'package:flutter/material.dart';
 
 import 'package:advanced_flutter/presentation/presenters/next_event_presenter.dart';
@@ -22,44 +23,57 @@ class _NextEventPageState extends State<NextEventPage> {
     super.initState();
   }
 
-  void showLoading() =>
-      showDialog(context: context, builder: (context) => const CircularProgressIndicator());
+  void showLoading() => showDialog(
+    context: context,
+    builder: (context) => SimpleDialog(
+      children: [
+        Column(
+          children: [
+            Text('Aguarde...', style: context.textStyles.labelLarge),
+            SizedBox(height: 16),
+            CircularProgressIndicator(),
+          ],
+        ),
+      ],
+    ),
+  );
 
   void hideLoading() => Navigator.of(context).maybePop();
 
-  Widget buildErrorLayout() => Column(
-    children: [
-      const Text('Algo errado aconteceu. Tente novamente!'),
-      ElevatedButton(
-        onPressed: () => widget.presenter.loadNextEvent(groupId: widget.groupId, isReload: true),
-        child: const Text('Recarregar'),
-      ),
-    ],
+  Widget buildErrorLayout() => Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text('Algo errado aconteceu. Tente novamente!', style: context.textStyles.bodyLarge),
+        const SizedBox(height: 16),
+        ElevatedButton(
+          onPressed: () => widget.presenter.loadNextEvent(groupId: widget.groupId, isReload: true),
+          child: Text('RECARREGAR', style: context.textStyles.labelMedium),
+        ),
+      ],
+    ),
   );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text('Próximo jogo')),
       body: StreamBuilder<NextEventViewModel>(
         stream: widget.presenter.nextEventStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.active) {
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) return buildErrorLayout();
           final viewModel = snapshot.data!;
           return RefreshIndicator(
-            onRefresh: () async =>
-                widget.presenter.loadNextEvent(groupId: widget.groupId, isReload: true),
+            onRefresh: () async => widget.presenter.loadNextEvent(groupId: widget.groupId, isReload: true),
             child: ListView(
               children: [
-                if (viewModel.goalkeepers.isNotEmpty)
-                  ListSection(title: 'DENTRO - GOLEIROS', items: viewModel.goalkeepers),
-                if (viewModel.players.isNotEmpty)
-                  ListSection(title: 'DENTRO - JOGADORES', items: viewModel.players),
+                if (viewModel.goalkeepers.isNotEmpty) ListSection(title: 'DENTRO - GOLEIROS', items: viewModel.goalkeepers),
+                if (viewModel.players.isNotEmpty) ListSection(title: 'DENTRO - JOGADORES', items: viewModel.players),
                 if (viewModel.out.isNotEmpty) ListSection(title: 'FORA', items: viewModel.out),
-                if (viewModel.doubt.isNotEmpty)
-                  ListSection(title: 'DÚVIDA', items: viewModel.doubt),
+                if (viewModel.doubt.isNotEmpty) ListSection(title: 'DÚVIDA', items: viewModel.doubt),
               ],
             ),
           );
@@ -79,18 +93,41 @@ final class ListSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(title),
-        Text(items.length.toString()),
-        ...items.map(
-          (player) => Row(
+        Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8, top: 32),
+          child: Row(
             children: [
-              Text(player.name),
-              PlayerPosition(position: player.position),
-              PlayerStatus(isConfirmed: player.isConfirmed),
-              PlayerPhoto(initials: player.initials, photo: player.photo),
+              Expanded(child: Text(title, style: context.textStyles.titleSmall)),
+              Text(items.length.toString(), style: context.textStyles.titleSmall),
             ],
           ),
         ),
+        const Divider(),
+        ...items
+            .map(
+              (player) => Container(
+                color: context.colors.scheme.onSurface.withValues(alpha: 0.03),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Row(
+                  children: [
+                    PlayerPhoto(initials: player.initials, photo: player.photo),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(player.name, style: context.textStyles.labelLarge),
+                          PlayerPosition(position: player.position),
+                        ],
+                      ),
+                    ),
+                    PlayerStatus(isConfirmed: player.isConfirmed),
+                  ],
+                ),
+              ),
+            )
+            .separatedBy(const Divider(indent: 82)),
+        const Divider(),
       ],
     );
   }
