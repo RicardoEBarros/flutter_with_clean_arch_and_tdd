@@ -13,7 +13,7 @@ final class HttpAdapter implements HttpGetClient {
   const HttpAdapter({required this.client});
 
   @override
-  Future<T?> get<T>({required String url, Json? headers, Json? params, Json? queryString}) async {
+  Future<dynamic> get({required String url, Json? headers, Json? params, Json? queryString}) async {
     final allHeaders = _buildHeaders(url: url, headers: headers);
     final uri = _buildUri(url: url, params: params, queryString: queryString);
     final response = await client.get(uri, headers: allHeaders);
@@ -25,8 +25,7 @@ final class HttpAdapter implements HttpGetClient {
       case 200:
         {
           if (response.body.isEmpty) return null;
-          final data = jsonDecode(response.body);
-          return (T == JsonArr) ? data.map<Json>((e) => e as Json).toList() : data;
+          return jsonDecode(response.body);
         }
       case 204:
         return null;

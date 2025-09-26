@@ -1,12 +1,9 @@
 import 'package:advanced_flutter/domain/entities/next_event_player.dart';
-import 'package:advanced_flutter/infra/types/json.dart';
+import 'package:advanced_flutter/infra/api/mappers/mapper.dart';
 
-final class NextEventPlayerMapper {
-  static List<NextEventPlayer> toList(JsonArr arr) {
-    return arr.map(NextEventPlayerMapper.toObject).toList();
-  }
-
-  static NextEventPlayer toObject(Json json) {
+final class NextEventPlayerMapper extends Mapper<NextEventPlayer> {
+  @override
+  NextEventPlayer toObject(dynamic json) {
     return NextEventPlayer(
       id: json['id'],
       name: json['name'],
