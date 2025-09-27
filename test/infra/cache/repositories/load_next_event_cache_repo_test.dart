@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import '../mappers/mapper.dart';
+import '../mappers/next_event_player_mapper.dart';
 import 'package:advanced_flutter/domain/entities/errors.dart';
 import 'package:advanced_flutter/domain/entities/next_event.dart';
-import 'package:advanced_flutter/domain/entities/next_event_player.dart';
 import 'package:advanced_flutter/infra/cache/clients/cache_get_client.dart';
 
 import '../../../mocks/fakes.dart';
@@ -40,20 +40,6 @@ final class NextEventMapper extends Mapper<NextEvent> {
   @override
   NextEvent toObject(dynamic json) {
     return NextEvent(groupName: json['groupName'], date: json['date'], players: NextEventPlayerMapper().toList(json['players']));
-  }
-}
-
-final class NextEventPlayerMapper extends Mapper<NextEventPlayer> {
-  @override
-  NextEventPlayer toObject(dynamic json) {
-    return NextEventPlayer(
-      id: json['id'],
-      name: json['name'],
-      position: json['position'],
-      photo: json['photo'],
-      confirmationDate: json['confirmationDate'],
-      isConfirmed: json['isConfirmed'],
-    );
   }
 }
 
