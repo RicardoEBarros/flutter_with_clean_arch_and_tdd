@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import '../mappers/mapper.dart';
-import '../mappers/next_event_player_mapper.dart';
+import '../mappers/next_event_mapper.dart';
 import 'package:advanced_flutter/domain/entities/errors.dart';
 import 'package:advanced_flutter/domain/entities/next_event.dart';
 import 'package:advanced_flutter/infra/cache/clients/cache_get_client.dart';
@@ -33,13 +32,6 @@ final class LoadNextEventCacheRepository {
     final json = await cacheClient.get(key: '$key:$groupId');
     if (json == null) throw UnexpectedError();
     return NextEventMapper().toObject(json);
-  }
-}
-
-final class NextEventMapper extends Mapper<NextEvent> {
-  @override
-  NextEvent toObject(dynamic json) {
-    return NextEvent(groupName: json['groupName'], date: json['date'], players: NextEventPlayerMapper().toList(json['players']));
   }
 }
 
