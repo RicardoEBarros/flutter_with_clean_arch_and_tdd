@@ -1,3 +1,4 @@
+import 'package:advanced_flutter/domain/entities/errors.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:advanced_flutter/domain/entities/next_event.dart';
@@ -32,6 +33,7 @@ final class LoadNextEventCacheRepository {
 
   Future<NextEvent> loadNextEvent({required String groupId}) async {
     final json = await cacheClient.get(key: '$key:$groupId');
+    if (json == null) throw UnexpectedError();
     return NextEventMapper().toObject(json);
   }
 }
@@ -116,5 +118,11 @@ void main() {
     cacheClient.error = error;
     final future = sut.loadNextEvent(groupId: groupId);
     expect(future, throwsA(error));
+  });
+
+  test('should throw an Unexpected on null response', () async {
+    cacheClient.response = null;
+    final future = sut.loadNextEvent(groupId: groupId);
+    expect(future, throwsA(const TypeMatcher<UnexpectedError>()));
   });
 }
