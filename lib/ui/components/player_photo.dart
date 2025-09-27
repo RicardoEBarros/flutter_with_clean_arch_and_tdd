@@ -1,4 +1,3 @@
-import 'package:awesome_flutter_extensions/awesome_flutter_extensions.dart';
 import 'package:flutter/material.dart';
 
 final class PlayerPhoto extends StatelessWidget {
@@ -11,7 +10,7 @@ final class PlayerPhoto extends StatelessWidget {
     return CircleAvatar(
       radius: 25,
       foregroundImage: photo != null ? NetworkImage(photo!) : null,
-      child: photo == null ? Text('RI', style: context.textStyles.labelLarge) : null,
+      child: photo == null ? Text('RI', style: Theme.of(context).textTheme.labelLarge) : null,
     );
   }
 }

@@ -156,7 +156,7 @@ void main() {
     expect(find.byType(PlayerStatus), findsNothing);
     expect(find.byType(PlayerPhoto), findsNothing);
     expect(find.text('Algo errado aconteceu. Tente novamente!'), findsOneWidget);
-    expect(find.descendant(of: find.byType(ElevatedButton), matching: find.text('Recarregar')), findsOneWidget);
+    expect(find.descendant(of: find.byType(ElevatedButton), matching: find.text('RECARREGAR')), findsOneWidget);
   });
 
   testWidgets('should load event data on reload click', (tester) async {
@@ -166,7 +166,7 @@ void main() {
     expect(presenter.isReload, false);
     presenter.emitError();
     await tester.pump();
-    await tester.tap(find.text('Recarregar'));
+    await tester.tap(find.text('RECARREGAR'));
     expect(presenter.callsCount, 2);
     expect(presenter.groupId, groupId);
     expect(presenter.isReload, true);

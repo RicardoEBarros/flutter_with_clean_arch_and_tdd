@@ -1,5 +1,6 @@
-import 'package:advanced_flutter/main/factories/ui/pages/next_event_page_factory.dart';
 import 'package:flutter/material.dart';
+
+import 'package:advanced_flutter/main/factories/ui/pages/next_event_page_factory.dart';
 
 void main() {
   runApp(const MyApp());
