@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
+import '../mappers/mapper.dart';
 import 'package:advanced_flutter/domain/entities/errors.dart';
 import 'package:advanced_flutter/domain/entities/next_event.dart';
 import 'package:advanced_flutter/domain/entities/next_event_player.dart';
@@ -33,11 +34,6 @@ final class LoadNextEventCacheRepository {
     if (json == null) throw UnexpectedError();
     return NextEventMapper().toObject(json);
   }
-}
-
-abstract base class Mapper<Entity> {
-  List<Entity> toList(dynamic arr) => arr.map<Entity>(toObject).toList();
-  Entity toObject(dynamic json);
 }
 
 final class NextEventMapper extends Mapper<NextEvent> {
