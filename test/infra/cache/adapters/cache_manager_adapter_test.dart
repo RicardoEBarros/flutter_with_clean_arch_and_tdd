@@ -17,10 +17,9 @@ final class CacheManagerAdapter {
   const CacheManagerAdapter({required this.client});
 
   Future<dynamic> get({required String key}) async {
-    final info = await client.getFileFromCache(key);
     try {
-      final fileIsInValid = info?.validTill.isBefore(DateTime.now()) != false || !await info!.file.exists();
-      if (fileIsInValid) return null;
+      final info = await client.getFileFromCache(key);
+      if (info?.validTill.isBefore(DateTime.now()) != false || !await info!.file.exists()) return null;
       final data = await info.file.readAsString();
       return json.decode(data);
     } catch (e) {
@@ -46,14 +45,14 @@ final class FileSpy implements File {
   @override
   Future<bool> exists() async {
     existsCallsCount++;
-    if (_existsError != null) throw Error();
+    if (_existsError != null) throw _existsError!;
     return _fileExists;
   }
 
   @override
   Future<String> readAsString({Encoding encoding = utf8}) async {
     readAsStringCallsCount++;
-    if (_readAsStringError != null) throw Error();
+    if (_readAsStringError != null) throw _readAsStringError!;
     return _response;
   }
 
@@ -312,9 +311,19 @@ final class CacheManagerSpy implements BaseCacheManager {
   int getFileFromCacheCallsCount = 0;
   FileSpy file = FileSpy();
   DateTime _validTill = DateTime.now().add(const Duration(seconds: 2));
+  Error? _getFileFromCacheError;
 
   void simulateEmptyFileInfo() => _isFileInfoEmpty = true;
   void simulateCacheOld() => _validTill = DateTime.now().subtract(const Duration(seconds: 2));
+  void simulateGetFileFromCacheError() => _getFileFromCacheError = Error();
+
+  @override
+  Future<FileInfo?> getFileFromCache(String key, {bool ignoreMemCache = false}) async {
+    this.key = key;
+    getFileFromCacheCallsCount++;
+    if (_getFileFromCacheError != null) throw _getFileFromCacheError!;
+    return _isFileInfoEmpty ? null : FileInfo(file, FileSource.Cache, _validTill, '');
+  }
 
   @override
   Future<void> dispose() => throw UnimplementedError();
@@ -328,13 +337,6 @@ final class CacheManagerSpy implements BaseCacheManager {
 
   @override
   Stream<FileInfo> getFile(String url, {String? key, Map<String, String>? headers}) => throw UnimplementedError();
-
-  @override
-  Future<FileInfo?> getFileFromCache(String key, {bool ignoreMemCache = false}) async {
-    this.key = key;
-    getFileFromCacheCallsCount++;
-    return _isFileInfoEmpty ? null : FileInfo(file, FileSource.Cache, _validTill, '');
-  }
 
   @override
   Future<FileInfo?> getFileFromMemory(String key) => throw UnimplementedError();
@@ -441,6 +443,12 @@ void main() {
 
   test('should return null if file.exists fails', () async {
     client.file.simulateExistsError();
+    final json = await sut.get(key: key);
+    expect(json, isNull);
+  });
+
+  test('should return null if file.getFileFromCache fails', () async {
+    client.simulateGetFileFromCacheError();
     final json = await sut.get(key: key);
     expect(json, isNull);
   });
