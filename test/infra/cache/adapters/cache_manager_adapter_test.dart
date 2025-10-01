@@ -28,8 +28,10 @@ final class FileSpy implements File {
   int existsCallsCount = 0;
   bool _fileExists = true;
   int readAsStringCallsCount = 0;
+  String _response = '{}';
 
   void simulateFileEmpty() => _fileExists = false;
+  void simulateInvalidResponse() => _response = 'invalid json';
 
   @override
   Future<bool> exists() async {
@@ -40,7 +42,7 @@ final class FileSpy implements File {
   @override
   Future<String> readAsString({Encoding encoding = utf8}) async {
     readAsStringCallsCount++;
-    return '';
+    return _response;
   }
 
   @override
@@ -399,5 +401,11 @@ void main() {
   test('should call file.readAsString only once', () async {
     await sut.get(key: key);
     expect(client.file.readAsStringCallsCount, 1);
+  });
+
+  test('should return null if cache is invalid', () async {
+    client.file.simulateInvalidResponse();
+    final json = await sut.get(key: key);
+    expect(json, isNull);
   });
 }
