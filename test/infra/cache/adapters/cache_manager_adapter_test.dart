@@ -19,8 +19,8 @@ final class CacheManagerAdapter {
   Future<dynamic> get({required String key}) async {
     final info = await client.getFileFromCache(key);
     if (info?.validTill.isBefore(DateTime.now()) != false || !await info!.file.exists()) return null;
-    final data = await info.file.readAsString();
     try {
+      final data = await info.file.readAsString();
       return json.decode(data);
     } catch (e) {
       return null;
@@ -33,10 +33,12 @@ final class FileSpy implements File {
   bool _fileExists = true;
   int readAsStringCallsCount = 0;
   String _response = '{}';
+  Error? _readAsStringError;
 
   void simulateFileEmpty() => _fileExists = false;
   void simulateInvalidResponse() => _response = 'invalid json';
   void simulateResponse(String response) => _response = response;
+  void simulateReadAsStringError() => _readAsStringError = Error();
 
   @override
   Future<bool> exists() async {
@@ -47,6 +49,7 @@ final class FileSpy implements File {
   @override
   Future<String> readAsString({Encoding encoding = utf8}) async {
     readAsStringCallsCount++;
+    if (_readAsStringError != null) throw Error();
     return _response;
   }
 
@@ -424,5 +427,11 @@ void main() {
     final json = await sut.get(key: key);
     expect(json['key1'], 'value1');
     expect(json['key2'], 'value2');
+  });
+
+  test('should return null if file.readAsString fails', () async {
+    client.file.simulateReadAsStringError();
+    final json = await sut.get(key: key);
+    expect(json, isNull);
   });
 }
