@@ -18,8 +18,9 @@ final class CacheManagerAdapter {
 
   Future<dynamic> get({required String key}) async {
     final info = await client.getFileFromCache(key);
-    if (info?.validTill.isBefore(DateTime.now()) != false || !await info!.file.exists()) return null;
     try {
+      final fileIsInValid = info?.validTill.isBefore(DateTime.now()) != false || !await info!.file.exists();
+      if (fileIsInValid) return null;
       final data = await info.file.readAsString();
       return json.decode(data);
     } catch (e) {
@@ -34,15 +35,18 @@ final class FileSpy implements File {
   int readAsStringCallsCount = 0;
   String _response = '{}';
   Error? _readAsStringError;
+  Error? _existsError;
 
   void simulateFileEmpty() => _fileExists = false;
   void simulateInvalidResponse() => _response = 'invalid json';
   void simulateResponse(String response) => _response = response;
-  void simulateReadAsStringError() => _readAsStringError = Error();
+  void simulateExistsError() => _readAsStringError = Error();
+  void simulateReadAsStringError() => _existsError = Error();
 
   @override
   Future<bool> exists() async {
     existsCallsCount++;
+    if (_existsError != null) throw Error();
     return _fileExists;
   }
 
@@ -431,6 +435,12 @@ void main() {
 
   test('should return null if file.readAsString fails', () async {
     client.file.simulateReadAsStringError();
+    final json = await sut.get(key: key);
+    expect(json, isNull);
+  });
+
+  test('should return null if file.exists fails', () async {
+    client.file.simulateExistsError();
     final json = await sut.get(key: key);
     expect(json, isNull);
   });
