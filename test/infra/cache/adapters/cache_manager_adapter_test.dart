@@ -90,8 +90,13 @@ void main() {
   });
 
   group('save', () {
+    late Map value;
+
+    setUp(() {
+      value = {'key1': anyString(), 'key2': anyIsoDate(), 'key3': anyBool(), 'key4': anyInt()};
+    });
+
     test('should call putFile with correct input', () async {
-      final value = {'key1': anyString(), 'key2': anyIsoDate(), 'key3': anyBool(), 'key4': anyInt()};
       await sut.save(key: key, value: value);
       final fileBytesDecoded = jsonDecode(utf8.decode(client.fileBytes!));
       expect(client.key, key);
