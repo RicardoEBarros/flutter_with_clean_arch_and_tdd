@@ -4,11 +4,13 @@ import 'package:advanced_flutter/infra/cache/mappers/next_event_mapper.dart';
 
 import 'package:advanced_flutter/domain/entities/next_event.dart';
 
+typedef LoadNextEventRepository = Future<NextEvent> Function({required String groupId});
+
 final class LoadNextEventFromApiWithCacheFallbackRepository {
   final String key;
   final CacheSaveClient cacheClient;
-  final Future<NextEvent> Function({required String groupId}) loadNextEventFromApi;
-  final Future<NextEvent> Function({required String groupId}) loadNextEventFromCache;
+  final LoadNextEventRepository loadNextEventFromApi;
+  final LoadNextEventRepository loadNextEventFromCache;
 
   const LoadNextEventFromApiWithCacheFallbackRepository({
     required this.key,
