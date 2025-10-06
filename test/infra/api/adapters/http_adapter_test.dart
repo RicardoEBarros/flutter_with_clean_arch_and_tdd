@@ -86,7 +86,7 @@ void main() {
     test('should throw UnexpectedError on 400', () async {
       client.statusCode = 400;
       final future = sut.get(url: url);
-      expect(future, throwsA(const TypeMatcher<UnexpectedError>()));
+      expect(future, throwsA(isA<UnexpectedError>()));
     });
 
     test('should throw SessionExpiredError on 401', () async {
@@ -98,19 +98,19 @@ void main() {
     test('should throw UnexpectedError on 403', () async {
       client.statusCode = 403;
       final future = sut.get(url: url);
-      expect(future, throwsA(const TypeMatcher<UnexpectedError>()));
+      expect(future, throwsA(isA<UnexpectedError>()));
     });
 
     test('should throw UnexpectedError on 404', () async {
       client.statusCode = 404;
       final future = sut.get(url: url);
-      expect(future, throwsA(const TypeMatcher<UnexpectedError>()));
+      expect(future, throwsA(isA<UnexpectedError>()));
     });
 
     test('should throw UnexpectedError on 500', () async {
       client.statusCode = 500;
       final future = sut.get(url: url);
-      expect(future, throwsA(const TypeMatcher<UnexpectedError>()));
+      expect(future, throwsA(isA<UnexpectedError>()));
     });
 
     test('should return a Map', () async {
