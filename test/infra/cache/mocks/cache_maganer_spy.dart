@@ -12,12 +12,14 @@ final class CacheManagerSpy implements BaseCacheManager {
   int putFileCallsCount = 0;
   FileSpy file = FileSpy();
   DateTime _validTill = DateTime.now().add(const Duration(seconds: 2));
-  Error? _getFileFromCacheError;
   dynamic fileBytesDecoded;
+  Error? _getFileFromCacheError;
+  Error? _getPutFileError;
 
   void simulateEmptyFileInfo() => _isFileInfoEmpty = true;
   void simulateCacheOld() => _validTill = DateTime.now().subtract(const Duration(seconds: 2));
   void simulateGetFileFromCacheError() => _getFileFromCacheError = Error();
+  void simulatePutFileError() => _getPutFileError = Error();
 
   @override
   Future<FileInfo?> getFileFromCache(String key, {bool ignoreMemCache = false}) async {
@@ -40,6 +42,7 @@ final class CacheManagerSpy implements BaseCacheManager {
     putFileCallsCount++;
     this.fileExtension = fileExtension;
     fileBytesDecoded = jsonDecode(utf8.decode(fileBytes));
+    if (_getPutFileError != null) throw _getPutFileError!;
     return file;
   }
 
