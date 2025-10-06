@@ -1,6 +1,5 @@
 import 'package:advanced_flutter/domain/entities/errors.dart';
-import 'package:advanced_flutter/infra/cache/clients/cache_save_client.dart';
-import 'package:advanced_flutter/infra/cache/mappers/next_event_mapper.dart';
+import 'package:advanced_flutter/infra/repositories/load_next_event_from_api_with_cache_fallback_repo.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:advanced_flutter/domain/entities/next_event.dart';
@@ -9,35 +8,6 @@ import 'package:advanced_flutter/domain/entities/next_event_player.dart';
 import '../../mocks/fakes.dart';
 import '../cache/mocks/cache_save_client_spy.dart';
 import '../mocks/load_next_event_repo_spy.dart';
-
-final class LoadNextEventFromApiWithCacheFallbackRepository {
-  final String key;
-  final CacheSaveClient cacheClient;
-  final Future<NextEvent> Function({required String groupId}) loadNextEventFromApi;
-  final Future<NextEvent> Function({required String groupId}) loadNextEventFromCache;
-
-  const LoadNextEventFromApiWithCacheFallbackRepository({
-    required this.key,
-    required this.cacheClient,
-    required this.loadNextEventFromApi,
-    required this.loadNextEventFromCache,
-  });
-
-  Future<NextEvent> loadNextEvent({required String groupId}) async {
-    try {
-      final event = await loadNextEventFromApi(groupId: groupId);
-      final json = NextEventMapper().toJson(event);
-      await cacheClient.save(key: '$key:$groupId', value: json);
-      return event;
-    } catch (e) {
-      try {
-        return await loadNextEventFromCache(groupId: groupId);
-      } catch (e) {
-        throw UnexpectedError();
-      }
-    }
-  }
-}
 
 void main() {
   late String key;
