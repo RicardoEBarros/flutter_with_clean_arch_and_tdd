@@ -1,4 +1,3 @@
-import 'package:advanced_flutter/domain/entities/errors.dart';
 import 'package:advanced_flutter/infra/repositories/load_next_event_from_api_with_cache_fallback_repo.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -97,10 +96,10 @@ void main() {
     expect(event, cacheRepo.output);
   });
 
-  test('should throw UnexpectedError when api and cache fails', () async {
+  test('should rethrow cache error when api and cache fails', () async {
     apiRepo.error = Error();
     cacheRepo.error = Error();
     final future = sut.loadNextEvent(groupId: groupId);
-    expect(future, throwsA(isA<UnexpectedError>()));
+    expect(future, throwsA(cacheRepo.error));
   });
 }
