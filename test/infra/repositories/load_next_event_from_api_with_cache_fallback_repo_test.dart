@@ -6,7 +6,7 @@ import 'package:advanced_flutter/domain/entities/next_event.dart';
 import 'package:advanced_flutter/domain/entities/next_event_player.dart';
 
 import '../../mocks/fakes.dart';
-import '../cache/mocks/cache_save_client_spy.dart';
+import '../cache/mocks/cache_save_client_mock.dart';
 import '../mocks/load_next_event_repo_spy.dart';
 
 void main() {
@@ -14,7 +14,7 @@ void main() {
   late String groupId = anyString();
   late LoadNextEventRepositorySpy apiRepo;
   late LoadNextEventRepositorySpy cacheRepo;
-  late CacheSaveClientSpy cacheClient;
+  late CacheSaveClientMock cacheClient;
   late LoadNextEventFromApiWithCacheFallbackRepository sut;
 
   setUp(() {
@@ -22,7 +22,7 @@ void main() {
     groupId = anyString();
     apiRepo = LoadNextEventRepositorySpy();
     cacheRepo = LoadNextEventRepositorySpy();
-    cacheClient = CacheSaveClientSpy();
+    cacheClient = CacheSaveClientMock();
     sut = LoadNextEventFromApiWithCacheFallbackRepository(
       key: key,
       cacheClient: cacheClient,
