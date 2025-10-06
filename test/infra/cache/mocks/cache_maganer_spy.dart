@@ -5,11 +5,14 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 final class CacheManagerSpy implements BaseCacheManager {
   String? key;
+  String? fileExtension;
   bool _isFileInfoEmpty = false;
   int getFileFromCacheCallsCount = 0;
+  int putFileCallsCount = 0;
   FileSpy file = FileSpy();
   DateTime _validTill = DateTime.now().add(const Duration(seconds: 2));
   Error? _getFileFromCacheError;
+  Uint8List? fileBytes;
 
   void simulateEmptyFileInfo() => _isFileInfoEmpty = true;
   void simulateCacheOld() => _validTill = DateTime.now().subtract(const Duration(seconds: 2));
@@ -21,6 +24,22 @@ final class CacheManagerSpy implements BaseCacheManager {
     getFileFromCacheCallsCount++;
     if (_getFileFromCacheError != null) throw _getFileFromCacheError!;
     return _isFileInfoEmpty ? null : FileInfo(file, FileSource.Cache, _validTill, '');
+  }
+
+  @override
+  Future<File> putFile(
+    String url,
+    Uint8List fileBytes, {
+    String? key,
+    String? eTag,
+    Duration maxAge = const Duration(days: 30),
+    String fileExtension = 'file',
+  }) async {
+    this.key = url;
+    putFileCallsCount++;
+    this.fileExtension = fileExtension;
+    this.fileBytes = fileBytes;
+    return file;
   }
 
   @override
@@ -45,16 +64,6 @@ final class CacheManagerSpy implements BaseCacheManager {
 
   @override
   Future<File> getSingleFile(String url, {String? key, Map<String, String>? headers}) => throw UnimplementedError();
-
-  @override
-  Future<File> putFile(
-    String url,
-    Uint8List fileBytes, {
-    String? key,
-    String? eTag,
-    Duration maxAge = const Duration(days: 30),
-    String fileExtension = 'file',
-  }) => throw UnimplementedError();
 
   @override
   Future<File> putFileStream(
