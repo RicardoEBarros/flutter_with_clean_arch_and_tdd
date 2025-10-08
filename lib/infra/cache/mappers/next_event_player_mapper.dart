@@ -11,7 +11,7 @@ final class NextEventPlayerMapper extends Mapper<NextEventPlayer> {
       name: json['name'],
       position: json['position'],
       photo: json['photo'],
-      confirmationDate: json['confirmationDate'],
+      confirmationDate: DateTime.tryParse(json['confirmationDate'] ?? ''),
       isConfirmed: json['isConfirmed'],
     );
   }
@@ -23,7 +23,7 @@ final class NextEventPlayerMapper extends Mapper<NextEventPlayer> {
     'name': player.name,
     'position': player.position,
     'photo': player.photo,
-    'confirmationDate': player.confirmationDate,
+    'confirmationDate': player.confirmationDate?.toIso8601String(),
     'isConfirmed': player.isConfirmed,
   };
 }
