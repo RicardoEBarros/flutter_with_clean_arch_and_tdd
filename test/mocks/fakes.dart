@@ -10,4 +10,4 @@ int anyInt([int max = 5000]) => faker.randomGenerator.integer(max);
 Json anyJson() => {anyString(): anyString()};
 JsonArr anyJsonArr() => List.generate(anyInt(5), (index) => anyJson());
 NextEventPlayer anyNextEventPlayer() => NextEventPlayer(id: anyString(), name: anyString(), isConfirmed: anyBool());
-List<NextEventPlayer> anyListNextEventPlayer() => List.generate(5, (index) => anyNextEventPlayer());
+List<NextEventPlayer> anyNextEventPlayerList() => List.generate(5, (index) => anyNextEventPlayer());

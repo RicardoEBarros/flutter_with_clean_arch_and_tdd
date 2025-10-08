@@ -1,9 +1,7 @@
-import 'package:advanced_flutter/domain/entities/next_event_player.dart';
-
 import 'mapper.dart';
 
+import 'package:advanced_flutter/domain/entities/next_event_player.dart';
 import 'package:advanced_flutter/infra/types/json.dart';
-import 'next_event_player_mapper.dart';
 import 'package:advanced_flutter/domain/entities/next_event.dart';
 
 final class NextEventMapper implements Mapper<NextEvent> {
@@ -20,6 +18,6 @@ final class NextEventMapper implements Mapper<NextEvent> {
   Json toJson(NextEvent dto) => {
     'groupName': dto.groupName,
     'date': dto.date.toIso8601String(),
-    'players': NextEventPlayerMapper().toJsonArr(dto.players),
+    'players': playerMapper.toJsonArr(dto.players),
   };
 }
