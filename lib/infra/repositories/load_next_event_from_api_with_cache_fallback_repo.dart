@@ -1,6 +1,6 @@
 import 'package:advanced_flutter/domain/entities/errors.dart';
 import 'package:advanced_flutter/infra/cache/clients/cache_save_client.dart';
-import 'package:advanced_flutter/infra/cache/mappers/next_event_mapper.dart';
+import 'package:advanced_flutter/infra/mappers/next_event_mapper.dart';
 
 import 'package:advanced_flutter/domain/entities/next_event.dart';
 
