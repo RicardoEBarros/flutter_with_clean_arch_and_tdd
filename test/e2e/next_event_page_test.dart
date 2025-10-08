@@ -1,13 +1,12 @@
 import 'dart:io';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
 
 import 'package:advanced_flutter/infra/api/adapters/http_adapter.dart';
 import 'package:advanced_flutter/infra/api/repositories/load_next_event_api_repo.dart';
-import 'package:advanced_flutter/infra/mappers/next_event_mapper.dart';
-import 'package:advanced_flutter/infra/mappers/next_event_player_mapper.dart';
+import 'package:advanced_flutter/main/factories/infra/mappers/next_event_mapper_factory.dart';
 import 'package:advanced_flutter/presentation/rx/next_event_rx_presenter.dart';
 import 'package:advanced_flutter/ui/pages/next_event_page.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 import '../infra/api/mocks/client_spy.dart';
 import '../mocks/fakes.dart';
@@ -24,11 +23,7 @@ void main() {
     final client = ClientSpy();
     client.responseJson = events;
     final httpClient = HttpAdapter(client: client);
-    final repo = LoadNextEventApiRepository(
-      httpClient: httpClient,
-      url: anyString(),
-      mapper: NextEventMapper(playerMapper: NextEventPlayerMapper()),
-    );
+    final repo = LoadNextEventApiRepository(httpClient: httpClient, url: anyString(), mapper: makeNextEventMapper());
     final presenter = NextEventRxPresenter(nextEventLoader: repo.loadNextEvent);
     final sut = MaterialApp(
       home: NextEventPage(presenter: presenter, groupId: anyString()),
