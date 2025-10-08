@@ -1,3 +1,4 @@
+import 'package:advanced_flutter/domain/entities/next_event.dart';
 import 'package:advanced_flutter/domain/entities/next_event_player.dart';
 import 'package:advanced_flutter/infra/types/json.dart';
 import 'package:faker/faker.dart';
@@ -11,3 +12,4 @@ Json anyJson() => {anyString(): anyString()};
 JsonArr anyJsonArr() => List.generate(anyInt(5), (index) => anyJson());
 NextEventPlayer anyNextEventPlayer() => NextEventPlayer(id: anyString(), name: anyString(), isConfirmed: anyBool());
 List<NextEventPlayer> anyNextEventPlayerList() => List.generate(5, (index) => anyNextEventPlayer());
+NextEvent anyNextEvent() => NextEvent(groupName: anyString(), date: anyDate(), players: anyNextEventPlayerList());
