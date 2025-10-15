@@ -13,21 +13,29 @@ import '../mocks/fakes.dart';
 
 void main() {
   late String events;
+  late ClientSpy client;
+  late HttpAdapter httpClient;
+  late LoadNextEventApiRepository apiRepo;
+  late NextEventRxPresenter presenter;
+  late MaterialApp sut;
 
   setUpAll(() async {
     final jsonFile = File('test/mocks/event.json');
     events = await jsonFile.readAsString();
   });
 
-  testWidgets('should present next event page', (tester) async {
-    final client = ClientSpy();
+  setUp(() {
+    client = ClientSpy();
     client.responseJson = events;
-    final httpClient = HttpAdapter(client: client);
-    final repo = LoadNextEventApiRepository(httpClient: httpClient, url: anyString(), mapper: makeNextEventMapper());
-    final presenter = NextEventRxPresenter(nextEventLoader: repo.loadNextEvent);
-    final sut = MaterialApp(
+    httpClient = HttpAdapter(client: client);
+    apiRepo = LoadNextEventApiRepository(httpClient: httpClient, url: anyString(), mapper: makeNextEventMapper());
+    presenter = NextEventRxPresenter(nextEventLoader: apiRepo.loadNextEvent);
+    sut = MaterialApp(
       home: NextEventPage(presenter: presenter, groupId: anyString()),
     );
+  });
+
+  testWidgets('should present next event page', (tester) async {
     await tester.pumpWidget(sut);
     await tester.pump();
     await tester.ensureVisible(find.text('Cristiano Ronaldo', skipOffstage: false));
