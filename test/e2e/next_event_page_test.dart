@@ -87,4 +87,14 @@ void main() {
     await tester.pump();
     expect(find.text('Claudio Gamarra'), findsOneWidget);
   });
+
+  testWidgets('should present error message', (tester) async {
+    client.simulateServerError();
+    cacheManager.file.simulateInvalidResponse();
+    await tester.pumpWidget(sut);
+    await tester.pump();
+    await tester.ensureVisible(find.text('Algo errado aconteceu. Tente novamente!', skipOffstage: false));
+    await tester.pump();
+    expect(find.text('Algo errado aconteceu. Tente novamente!'), findsOneWidget);
+  });
 }
