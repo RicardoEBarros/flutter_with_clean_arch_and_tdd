@@ -17,7 +17,7 @@ import '../infra/cache/mocks/cache_maganer_spy.dart';
 import '../mocks/fakes.dart';
 
 void main() {
-  late String events;
+  late String responseJson;
   late String key;
   late ClientSpy client;
   late CacheManagerSpy cacheManager;
@@ -32,13 +32,12 @@ void main() {
 
   setUpAll(() async {
     final jsonFile = File('test/mocks/event.json');
-    events = await jsonFile.readAsString();
+    responseJson = await jsonFile.readAsString();
   });
 
   setUp(() {
     key = anyString();
     client = ClientSpy();
-    client.responseJson = events;
     httpClient = HttpAdapter(client: client);
     mapper = makeNextEventMapper();
     cacheManager = CacheManagerSpy();
@@ -59,6 +58,23 @@ void main() {
   });
 
   testWidgets('should present api data', (tester) async {
+    client.responseJson = responseJson;
+    await tester.pumpWidget(sut);
+    await tester.pump();
+    await tester.ensureVisible(find.text('Cristiano Ronaldo', skipOffstage: false));
+    await tester.pump();
+    expect(find.text('Cristiano Ronaldo'), findsOneWidget);
+    await tester.ensureVisible(find.text('Lionel Messi', skipOffstage: false));
+    await tester.pump();
+    expect(find.text('Lionel Messi'), findsOneWidget);
+    await tester.ensureVisible(find.text('Claudio Gamarra', skipOffstage: false));
+    await tester.pump();
+    expect(find.text('Claudio Gamarra'), findsOneWidget);
+  });
+
+  testWidgets('should present cache data', (tester) async {
+    client.simulateServerError();
+    cacheManager.file.simulateResponse(responseJson);
     await tester.pumpWidget(sut);
     await tester.pump();
     await tester.ensureVisible(find.text('Cristiano Ronaldo', skipOffstage: false));
