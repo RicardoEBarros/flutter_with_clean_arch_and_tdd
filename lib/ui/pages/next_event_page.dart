@@ -1,8 +1,10 @@
+import 'package:flutter/material.dart';
+
+import 'package:advanced_flutter/presentation/viewmodel/next_event_player_viewmodel.dart';
+import 'package:advanced_flutter/presentation/viewmodel/next_event_viewmodel.dart';
 import 'package:advanced_flutter/ui/components/player_photo.dart';
 import 'package:advanced_flutter/ui/components/player_position.dart';
 import 'package:advanced_flutter/ui/components/player_status.dart';
-import 'package:flutter/material.dart';
-
 import 'package:advanced_flutter/presentation/presenters/next_event_presenter.dart';
 
 final class NextEventPage extends StatefulWidget {
