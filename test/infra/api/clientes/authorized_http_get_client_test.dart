@@ -14,24 +14,29 @@ final class AuthorizedHttpGetClient {
 
   const AuthorizedHttpGetClient({required this.cacheClient, required this.httpClient});
 
-  Future<void> get({required String url, Json? params, Json? queryString}) async {
-    await cacheClient.get(key: 'current_user');
-    await httpClient.get(url: url, params: params, queryString: queryString);
+  Future<void> get({required String url, Json? params, Json? queryString, Json? headers}) async {
+    final user = await cacheClient.get(key: 'current_user');
+    if (user != null) headers = (headers ?? {})..addAll({'authorization': user['accessToken']});
+    await httpClient.get(url: url, params: params, queryString: queryString, headers: headers);
   }
 }
 
 void main() {
   late String url;
-  late Json queryString;
+  late String token;
   late Json params;
+  late Json headers;
+  late Json queryString;
   late CacheGetClientSpy cacheClient;
   late HttpGetClientSpy httpClient;
   late AuthorizedHttpGetClient sut;
 
   setUp(() {
     url = anyString();
+    token = anyString();
     params = anyJson();
     queryString = anyJson();
+    headers = anyJson();
     cacheClient = CacheGetClientSpy();
     httpClient = HttpGetClientSpy();
     sut = AuthorizedHttpGetClient(cacheClient: cacheClient, httpClient: httpClient);
@@ -49,5 +54,29 @@ void main() {
     expect(httpClient.url, url);
     expect(httpClient.params, params);
     expect(httpClient.queryString, queryString);
+  });
+
+  test('should call HttpClient with null headers', () async {
+    cacheClient.response = null;
+    await sut.get(url: url, headers: null);
+    expect(httpClient.headers, isNull);
+  });
+
+  test('should call HttpClient with current headers', () async {
+    cacheClient.response = null;
+    await sut.get(url: url, headers: headers);
+    expect(httpClient.headers, headers);
+  });
+
+  test('should call HttpClient with authorization headers', () async {
+    cacheClient.response = {'accessToken': token};
+    await sut.get(url: url, headers: null);
+    expect(httpClient.headers, {'authorization': token});
+  });
+
+  test('should call HttpClient with merged headers', () async {
+    cacheClient.response = {'accessToken': token};
+    await sut.get(url: url, headers: {'q1': 'v1', 'q2': 'v2'});
+    expect(httpClient.headers, {'q1': 'v1', 'q2': 'v2', 'authorization': token});
   });
 }
