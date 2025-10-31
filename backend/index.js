@@ -6,9 +6,8 @@ const app = express()
 app.use(cors())
 
 app.get('/api/groups/:groupId/next_event', (req, res) => {
-  if (req.params['groupId'] !== 'valid_id') {
-    res.status(400).send(Error('Invalid id'));
-  }
+  if (req.headers['authorization'] !== 'valid_token') return res.status(401).send(Error('Unauthorized'));
+  if (req.params['groupId'] !== 'valid_id') return res.status(400).send(Error('Invalid id'));
   const eventFile = fs.readFileSync('../test/mocks/event.json')
   const eventData = JSON.parse(eventFile)
   res.send(eventData)
