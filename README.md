@@ -1,4 +1,4 @@
-# Advanced Flutter - Football Players List
+# Advanced Flutter - Lista de Jogadores de Futebol
 
 Este projeto foi desenvolvido durante o curso **"Flutter Avançado com Clean Architecture e TDD"**. A aplicação consiste em uma tela única que permite ao usuário visualizar a lista de jogadores de futebol escalados para a próxima partida, focando em práticas de desenvolvimento escaláveis e testáveis.
 
