@@ -1,16 +1,37 @@
-# advanced_flutter
+# Advanced Flutter - Football Players List
 
-A new Flutter project.
+Este projeto foi desenvolvido durante o curso **"Flutter Avançado com Clean Architecture e TDD"**. A aplicação consiste em uma tela única que lista os jogadores de futebol escalados para a próxima partida, focando em práticas de desenvolvimento escaláveis e testáveis.
 
-## Getting Started
+## 🚀 Tecnologias e Padrões Aplicados
 
-This project is a starting point for a Flutter application.
+Este projeto não é apenas uma lista de jogadores, mas uma demonstração de engenharia de software aplicada ao mobile:
 
-A few resources to get you started if this is your first Flutter project:
+* **Clean Architecture**: Separação rigorosa de camadas (Domain, Data, Presentation, Main) para facilitar a manutenção e evolução do código.
+* **TDD (Test Driven Development)**: Desenvolvimento orientado a testes, garantindo que cada funcionalidade seja validada antes mesmo de sua implementação final.
+* **Programação Reativa**: Uso de `RxDart` para gerenciar o estado da aplicação de forma fluida.
+* **Design Patterns**: Implementação de padrões como *Dependency Injection*, *Decorator* e *Adapter*.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## 🛠️ Stack Técnica
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+* **Linguagem:** Dart
+* **Framework:** Flutter (SDK ^3.9.2)
+* **Gerenciamento de Estado:** Streams / RxDart
+* **Principais Dependências:**
+    * `http`: Comunicação com APIs externas.
+    * `flutter_cache_manager`: Gerenciamento de cache para performance.
+    * `dartx`: Extensões utilitárias para código mais limpo.
+* **Ferramentas de Teste:**
+    * `faker`: Geração de dados aleatórios para testes robustos.
+    * `network_image_mock`: Mock de imagens para testes de interface.
+
+## 📦 Como Executar o Projeto
+
+### 1. Pré-requisitos
+Certifique-se de ter o Flutter instalado e o seu celular Android conectado via USB com a **Depuração USB** ativa.
+
+### 2. Instalação
+Clone o repositório e instale as dependências:
+```bash
+git clone [https://github.com/seu-usuario/advanced_flutter.git](https://github.com/seu-usuario/advanced_flutter.git)
+cd advanced_flutter
+flutter pub get
